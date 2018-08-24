@@ -40,45 +40,19 @@ LATESTARTSERVICE=true
 # Uncomment DYNAMICOREO if you want libs installed to vendor for oreo and newer and system for anything older
 # Uncomment DYNAMICAPP if you want anything in $INSTALLER/system/app to be installed to the optimal app directory (/system/priv-app if it exists, /system/app otherwise)
 # Uncomment SYSOVERRIDE if you want the mod to always be installed to system (even on magisk)
+# Uncomment RAMDISK if you have ramdisk modifications. If you only want ramdisk patching as part of a conditional, just keep this commented out and set RAMDISK=true in that conditional.
+# Uncomment DEBUG if you want full debug logs (saved to SDCARD if in twrp, part of regular log if in magisk manager (user will need to save log after flashing)
 #MINAPI=21
 #MAXAPI=25
 #SYSOVERRIDE=true
 #DYNAMICOREO=true
 #DYNAMICAPP=true
+#RAMDISK=true
+#DEBUG=true
 
 # Custom Variables - Keep everything within this function
 unity_custom() {
-  # Patch boot img if not using root solution that supports boot scripts
-  if ! $MAGISK || $SYSOVERRIDE; then
-    ui_print "   Using Anykernel2 by osm0sis @ xda-developers"
-    rm -f $INFO
-    sed -i -e "s|<INSTALLER>|$INSTALLER|" -e "s|<OUTFD>|$OUTFD|" -e "s|<BOOTMODE>|$BOOTMODE|" -e "s|<SLOT>|$SLOT|" -e "s|<MAGISK>|$MAGISK|" $INSTALLER/common/ak2/anykernel.sh
-    mkdir -p $INSTALLER/common/ak2/bin
-    cd $INSTALLER/common/ak2
-    case $ABILONG in
-      arm64*) BBABI=arm64;;
-      arm*) BBABI=arm;;
-      x86_64*) BBABI=x86_64;;
-      x86*) BBABI=x86;;
-      mips64*) BBABI=mips64;;
-      mips*) BBABI=mips;;
-      *) $MAGISK && rm -rf $MODPATH; abort "Unknown architecture: $ABILONG";;
-    esac
-    BB=$INSTALLER/common/ak2/tools/busybox-$BBABI
-    chmod 755 $BB
-    $BB chmod -R 755 $INSTALLER/common/ak2/tools $INSTALLER/common/ak2/bin
-    for i in $($BB --list); do
-      $BB ln -s $BB $INSTALLER/common/ak2/bin/$i
-    done
-    if [ $? != 0 -o -z "$(ls $INSTALLER/common/ak2/bin)" ]; then
-      abort "   ! Recovery busybox setup failed!"
-    fi
-    PATH="$INSTALLER/common/ak2/bin:$PATH" $BB ash $INSTALLER/common/ak2/anykernel.sh $2
-    if [ $? != "0" ]; then
-      abort "   ! Install failed!"
-    fi
-    cleanup
-  fi
+  :
 }
 
 ##########################################################################################
